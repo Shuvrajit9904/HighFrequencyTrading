@@ -5,7 +5,7 @@ Created on Mon Jul 27 11:48:06 2020
 
 @author: shuvrajit
 """
-
+import datetime
 import pandas as pd
 import sys
 from yahoo_finance_api2 import share
@@ -18,7 +18,7 @@ symbol_data = None
 
 try:
     symbol_data = my_share.get_historical(share.PERIOD_TYPE_DAY,
-                                          1,
+                                          0.03,
                                           share.FREQUENCY_TYPE_MINUTE,
                                           1)
 except YahooFinanceError as e:
@@ -39,7 +39,9 @@ stocks = ['F',
           'PLUG', 
           'NCLH'  ]
 
-print(pd.DataFrame.from_dict(symbol_data).close.iloc[-1])
+df = pd.DataFrame.from_dict(symbol_data)
+df['timestamp'] = df['timestamp'].apply(lambda x : datetime.datetime.fromtimestamp(x / 1e3))
+print(df[['timestamp', 'close']])
 plt.plot(symbol_data['close'])
 plt.ylabel('some numbers')
 plt.show()
